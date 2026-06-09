@@ -1,0 +1,363 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Easing tokens — strong custom curves, used across all transitions */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+    /* Z-index scale */
+    --z-base: 1;
+    --z-overlay: 10;
+    --z-elev: 20;
+    --z-meta: 30;
+    --z-nav: 50;
+    --z-modal: 100;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: #0A0A0A;
+  }
+
+  /* Global focus ring — flash green, high contrast, keyboard-only */
+  :focus-visible {
+    outline: 2px solid #4ADE80;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  body {
+    background-color: #0A0A0A;
+    color: #F5F0E8;
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: rgba(74, 222, 128, 0.25);
+    color: #F5F0E8;
+  }
+
+  /* Form: autofill cleanup */
+  input:-webkit-autofill,
+  textarea:-webkit-autofill {
+    -webkit-text-fill-color: #F5F0E8;
+    -webkit-box-shadow: 0 0 0 1000px #0A0A0A inset;
+    caret-color: #F5F0E8;
+    transition: background-color 9999s ease-in-out 0s;
+  }
+}
+
+@layer utilities {
+  .label {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #A8A29E;
+  }
+
+  .hairline {
+    border-color: #1F1F1F;
+  }
+
+  /* Subtle border-pill used for badges, chips, tags */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.65rem;
+    border: 1px solid #1F1F1F;
+    border-radius: 999px;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #A8A29E;
+    line-height: 1;
+    transition: border-color 200ms ease-out, color 200ms ease-out;
+  }
+
+  .pill:hover {
+    border-color: #2a2a2a;
+    color: #F5F0E8;
+  }
+
+  /* Section "reveal" — no animation, no JS dependency. Content is always
+     visible. (Previously did a fade-up via IntersectionObserver, but that
+     hid content if JS was slow/blocked/cached. Robustness over polish.) */
+  .reveal { opacity: 1; transform: none; }
+
+  /* Press feedback — apply to any interactive element for tactile press scale */
+  .press {
+    transition: transform 160ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+  }
+  .press:active {
+    transform: scale(0.97);
+  }
+
+  /* Submit-button spinner — small ring at the right of the label */
+  .spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 999px;
+    animation: spinner-rotate 700ms linear infinite;
+  }
+
+  @keyframes spinner-rotate {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Hero entrance — pure CSS, no JS. Reduced-motion skips animation entirely
+     and content shows immediately. */
+  .hero-enter { opacity: 1; transform: none; }
+
+  /* Statement name: massive, tight, fluorescent green, smooth layered glow */
+  .hero-name {
+    font-family: var(--font-hero), system-ui, sans-serif;
+    font-weight: 900;
+    color: #4ADE80;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-size: clamp(3.5rem, 11vw, 9rem);
+    /* Layered soft drop-shadow gives a smoother glow than a single huge text-shadow */
+    filter:
+      drop-shadow(0 0 12px rgba(74, 222, 128, 0.55))
+      drop-shadow(0 0 32px rgba(74, 222, 128, 0.35))
+      drop-shadow(0 0 72px rgba(74, 222, 128, 0.20));
+    white-space: nowrap;
+  }
+
+  .hero-photo {
+    /* used by Hero <img> — entrance fade only, no filter overrides */
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-enter {
+      animation: hero-up 900ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+      animation-delay: var(--d, 0ms);
+    }
+    .hero-photo {
+      animation: hero-photo-in 1400ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+    .hero-name {
+      animation: hero-name-in 1000ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+      animation-delay: var(--d, 500ms);
+    }
+    .hero-scroll-line {
+      animation: hero-scroll-pulse 2.4s ease-in-out infinite;
+      transform-origin: top;
+    }
+  }
+
+  @keyframes hero-up {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @keyframes hero-photo-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes hero-name-in {
+    from { opacity: 0; transform: scale(0.96); letter-spacing: 0; }
+    to { opacity: 1; transform: scale(1); letter-spacing: -0.04em; }
+  }
+
+  @keyframes hero-scroll-pulse {
+    0%, 100% { transform: scaleY(1); opacity: 0.85; }
+    50% { transform: scaleY(0.55); opacity: 0.5; }
+  }
+
+  /* Below-the-fold section titles — Inter Tight 900 white, no glow */
+  .section-title {
+    font-family: var(--font-hero), system-ui, sans-serif;
+    font-weight: 900;
+    color: #F5F0E8;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  /* Subtler title for Work cards */
+  .card-title {
+    font-family: var(--font-hero), system-ui, sans-serif;
+    font-weight: 700;
+    color: #F5F0E8;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  }
+
+  /* Section enter — same pattern as hero-enter (visible default, optional anim) */
+  .section-enter { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .section-enter {
+      animation: section-up 800ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+      animation-delay: var(--d, 0ms);
+    }
+  }
+
+  @keyframes section-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ASCII-art pulse — applied to a single character (e.g. ◉ in Fleet HQ diagram) */
+  .ascii-pulse {
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ascii-pulse {
+      animation: ascii-pulse 2s ease-in-out infinite;
+    }
+  }
+
+  @keyframes ascii-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  /* Dashed-art progress strip — slides a short flash-green segment across */
+  .dashed-progress {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 38%;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      #4ADE80 50%,
+      transparent 100%
+    );
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .dashed-progress {
+      animation: dashed-progress 2.6s ease-in-out infinite;
+    }
+  }
+
+  @keyframes dashed-progress {
+    0% { left: -40%; }
+    50% { left: 102%; }
+    100% { left: 102%; }
+  }
+
+  /* Per-element staggered fade-in. Add .stagger-in and inline --d on each child. */
+  .stagger-in {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: stagger-in 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: var(--d, 0ms);
+  }
+
+  @keyframes stagger-in {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Status / NOW dot pulse */
+  .pulse-dot {
+    position: relative;
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #4ADE80;
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+    animation: pulse-ring 2.2s cubic-bezier(0.66, 0, 0.34, 1) infinite;
+  }
+
+  .pulse-ring {
+    position: relative;
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border: 1px solid #4ADE80;
+    border-radius: 999px;
+    animation: pulse-ring 2.6s cubic-bezier(0.66, 0, 0.34, 1) infinite;
+  }
+
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55); }
+    70% { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+  }
+
+  /* Marquee */
+  .marquee {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  }
+
+  .marquee-track {
+    display: flex;
+    flex-shrink: 0;
+    animation: marquee 60s linear infinite;
+    will-change: transform;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Field styling for the contact form */
+  .field {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #1F1F1F;
+    color: #F5F0E8;
+    padding: 14px 0;
+    font-size: 15px;
+    line-height: 1.5;
+    transition: border-color 200ms ease-out;
+    outline: none;
+    resize: none;
+  }
+
+  .field::placeholder {
+    color: #5d5957;
+  }
+
+  .field:focus {
+    border-bottom-color: #4ADE80;
+  }
+
+  /* Reduced motion: kill non-essential animation */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .stagger-in { opacity: 1; transform: none; animation: none; }
+    .pulse-dot, .pulse-ring { animation: none; box-shadow: none; }
+    .marquee-track { animation: none; }
+    .hero-enter, .hero-photo { animation: none; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+}

@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+.DS_Store
+.env*.local
+*.tsbuildinfo
+next-env.d.ts
+
+# Claude / AI tooling
+.claude/
+.agents/
+skills-lock.json

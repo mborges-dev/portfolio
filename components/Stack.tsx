@@ -8,12 +8,14 @@ type Cell = {
 };
 
 const alsoWorkingWith = [
-  'OpenAI',
-  'GPT-4o',
   'Tailwind',
-  'WhatsApp Cloud API',
+  'shadcn/ui',
   'Stripe',
   'Resend',
+  'MCP',
+  'tmux',
+  'Three.js',
+  'Bash',
 ];
 
 const cells: Cell[] = [
@@ -22,6 +24,21 @@ const cells: Cell[] = [
     org: 'Anthropic',
     description: 'Production agents, structured outputs, long-context document parsing.',
     example: 'Used for: WhatsApp agent persona, tool-use over restaurant menus, JSON extraction.',
+  },
+  {
+    name: 'Multi-agent',
+    org: 'Orchestration',
+    description:
+      'Claude Sonnet 4.6 in tmux-based sessions, shared filesystem coordination, MCP integrations, token economy enforced per agent.',
+    example:
+      'Used for: Fleet HQ — 38 agents in dedicated sessions, watcher daemon coordinating across worlds.',
+  },
+  {
+    name: 'OpenAI',
+    org: 'GPT-4o',
+    description:
+      'Vision models for document extraction, structured outputs, function calling — paired with Claude for redundancy and specialization.',
+    example: 'Used for: DocFlow invoice extraction, vision-OCR pipelines, fallback model when latency matters.',
   },
   {
     name: 'n8n',
@@ -34,19 +51,30 @@ const cells: Cell[] = [
     example: 'Used for: customer state, vector search, row-level multi-tenant isolation.',
   },
   {
+    name: 'WhatsApp',
+    org: 'Cloud API',
+    description:
+      'Customer-facing AI agents at scale. Conversation state, webhook handling, message templates, multi-tenant deployments.',
+    example: 'Used for: TheFacio — restaurants and bars running AI customer service end-to-end on WhatsApp.',
+  },
+  {
     name: 'Next.js 14',
-    description: 'App Router, server components, streaming, RSCs.',
+    description:
+      'App Router, RSCs, server actions, edge runtime — full-stack on a single mental model.',
     example: 'Used for: dashboards, marketing sites, edge-rendered SSR APIs.',
   },
   {
     name: 'Cloudflare Workers',
-    description: 'Edge compute, KV, R2, low-latency API gateways.',
+    description:
+      'Edge functions, KV stores, R2, Pages — global deployment without ops overhead.',
     example: 'Used for: webhook fan-out, file pipelines, geo-aware routing.',
   },
   {
     name: 'TypeScript',
-    description: 'Strict mode, type-safe APIs, no any.',
-    example: 'Used for: every project — zod schemas at every boundary, never unknown shape.',
+    description:
+      "Strict mode end-to-end. Schema-first development. Zero 'any' tolerance.",
+    example:
+      'Used for: every project — zod schemas at every boundary, never unknown shape.',
   },
 ];
 

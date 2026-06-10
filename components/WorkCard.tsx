@@ -1,7 +1,15 @@
+'use client';
+
+import type { KeyboardEvent, MouseEvent } from 'react';
 import Image from 'next/image';
+import { BrowserFramedVideo } from './BrowserFramedVideo';
+import { DeviceDuoComposition } from './DeviceDuoComposition';
+import { MacFramedScreenshot } from './MacFramedScreenshot';
+import { FleetHQCarousel } from './FleetHQCarousel';
 
 export type Status =
   | 'LIVE'
+  | 'IN PRODUCTION'
   | 'PRIVATE'
   | 'LOCAL'
   | 'IN DEVELOPMENT'
@@ -20,12 +28,39 @@ export type Work = {
   link?: { label: string; href: string };
   noLinkLabel?: string;
   /** Visual variant for the left image area */
-  art?: 'screenshot' | 'terminal' | 'dashed' | 'ascii' | 'macbook';
+  art?:
+    | 'screenshot'
+    | 'terminal'
+    | 'dashed'
+    | 'ascii'
+    | 'macbook'
+    | 'browser'
+    | 'duo'
+    | 'mac'
+    | 'carousel';
   terminalLines?: string[];
   asciiCaption?: string;
+  /** For art: 'browser' — video source + URL bar text */
+  videoSrc?: string;
+  /** For art: 'browser' — optional WebM source (preferred by modern browsers
+   *  for smaller payload; MP4 acts as fallback). */
+  videoWebmSrc?: string;
+  browserUrl?: string;
+  /** For art: 'duo' — second screenshot path for the iPhone frame */
+  mobileImage?: string;
+  /** For art: 'carousel' — ordered list of screenshots */
+  images?: string[];
 };
 
-export function WorkCard({ work }: { work: Work; index?: number }) {
+export function WorkCard({
+  work,
+  onOpen,
+}: {
+  work: Work;
+  index?: number;
+  /** When set, the whole card becomes clickable to open a detail modal */
+  onOpen?: () => void;
+}) {
   // Visual hierarchy: live = full presence; everything else gets degrees of recess.
   const cardOpacity =
     work.status === 'IN DEVELOPMENT'
@@ -40,44 +75,106 @@ export function WorkCard({ work }: { work: Work; index?: number }) {
 
   const artVariant = work.art ?? 'screenshot';
 
+  // Click anywhere on the card opens the modal — UNLESS the click originated
+  // from an inner interactive element (link, button, carousel dots). Videos
+  // are deliberately NOT excluded: clicking the video opens the modal too.
+  const handleClick = (e: MouseEvent<HTMLElement>) => {
+    if (!onOpen) return;
+    const t = e.target as HTMLElement;
+    if (t.closest('a, button, [data-no-modal]')) return;
+    onOpen();
+  };
+
+  const handleKey = (e: KeyboardEvent<HTMLElement>) => {
+    if (!onOpen) return;
+    if (e.target !== e.currentTarget) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onOpen();
+    }
+  };
+
   return (
-    <article className={`grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center ${cardOpacity}`}>
-      {/* Image / art — left 55% on desktop */}
+    <article
+      role={onOpen ? 'button' : undefined}
+      tabIndex={onOpen ? 0 : undefined}
+      onClick={onOpen ? handleClick : undefined}
+      onKeyDown={onOpen ? handleKey : undefined}
+      aria-label={onOpen ? `${work.title} — open case study` : undefined}
+      className={[
+        'grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center',
+        cardOpacity,
+        onOpen ? 'cursor-pointer' : '',
+      ].join(' ')}
+    >
+      {/* Image / art — left 55% on desktop. Browser variant renders as its
+          own tight-fit frame (no outer rectangle). All others sit inside a
+          4:3 container with hairline/dashed border. */}
       <div className="lg:col-span-7">
-        <div
-          className={[
-            'relative aspect-[4/3] overflow-hidden rounded-[4px]',
-            artVariant === 'dashed'
-              ? 'border border-dashed border-bone/20'
-              : 'border border-hairline',
-          ].join(' ')}
-          style={
-            artVariant === 'screenshot'
-              ? { background: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)' }
-              : { background: '#0F0F0F' }
-          }
-        >
-          {artVariant === 'terminal' ? (
-            <TerminalArt filename={`${work.title.toLowerCase().replace(/\s+/g, '-')}.sh`} lines={work.terminalLines || []} />
-          ) : artVariant === 'dashed' ? (
-            <DashedArt />
-          ) : artVariant === 'ascii' ? (
-            <AsciiArt caption={work.asciiCaption} />
-          ) : artVariant === 'macbook' ? (
-            <MacbookFramedScreenshot src={work.image} alt={`${work.title} interface`} />
-          ) : work.image ? (
-            <Image
-              src={work.image}
-              alt={`${work.title} screenshot`}
-              fill
-              sizes="(max-width: 1024px) 100vw, 60vw"
-              className="object-cover"
-              unoptimized
-            />
-          ) : (
-            <PlaceholderArt title={work.title} status={work.status} />
-          )}
-        </div>
+        {artVariant === 'browser' ? (
+          <BrowserFramedVideo
+            imageSrc={work.image}
+            src={work.videoSrc}
+            webmSrc={work.videoWebmSrc}
+            url={work.browserUrl || work.link?.label || `${work.title.toLowerCase()}.com`}
+            title={work.title}
+          />
+        ) : artVariant === 'duo' ? (
+          <DeviceDuoComposition
+            macSrc={work.image}
+            mobileSrc={work.mobileImage}
+            macUrl={work.browserUrl || `${work.title.toLowerCase()}.app`}
+            title={work.title}
+          />
+        ) : artVariant === 'mac' ? (
+          <MacFramedScreenshot
+            src={work.image}
+            url={work.browserUrl || `${work.title.toLowerCase()}.app`}
+            title={work.title}
+          />
+        ) : artVariant === 'carousel' ? (
+          <FleetHQCarousel
+            images={work.images}
+            url={work.browserUrl || `${work.title.toLowerCase()}.local`}
+            caption={work.asciiCaption}
+            title={work.title}
+          />
+        ) : (
+          <div
+            className={[
+              'relative aspect-[4/3] overflow-hidden rounded-[8px]',
+              artVariant === 'dashed'
+                ? 'border border-dashed border-bone/20'
+                : 'border border-hairline',
+            ].join(' ')}
+            style={
+              artVariant === 'screenshot'
+                ? { background: 'transparent' }
+                : { background: '#0F0F0F' }
+            }
+          >
+            {artVariant === 'terminal' ? (
+              <TerminalArt filename={`${work.title.toLowerCase().replace(/\s+/g, '-')}.sh`} lines={work.terminalLines || []} />
+            ) : artVariant === 'dashed' ? (
+              <DashedArt />
+            ) : artVariant === 'ascii' ? (
+              <AsciiArt caption={work.asciiCaption} />
+            ) : artVariant === 'macbook' ? (
+              <MacbookFramedScreenshot src={work.image} alt={`${work.title} interface`} />
+            ) : work.image ? (
+              <Image
+                src={work.image}
+                alt={`${work.title} screenshot`}
+                fill
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              <PlaceholderArt title={work.title} status={work.status} />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Text — right 45% on desktop */}
@@ -115,27 +212,30 @@ export function WorkCard({ work }: { work: Work; index?: number }) {
           ))}
         </ul>
 
-        {/* Link or no-link label */}
-        <div className="mt-8">
-          {work.link ? (
-            <a
-              href={work.link.href}
-              target="_blank"
-              rel="noreferrer"
-              className="press group inline-flex items-center gap-2 py-2 -my-2 font-mono text-[12px] tracking-[0.06em] text-bone hover:text-flash transition-colors"
-            >
-              <span>{work.link.label}</span>
-              <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
-                →
+        {/* Link or no-link label. Omitted entirely when neither is set —
+            keeps cards like Almi clean (no "Case study on request" fallback). */}
+        {work.link || work.noLinkLabel ? (
+          <div className="mt-8">
+            {work.link ? (
+              <a
+                href={work.link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="press group inline-flex items-center gap-2 py-2 -my-2 font-mono text-[12px] tracking-[0.06em] text-bone hover:text-flash transition-colors"
+              >
+                <span>{work.link.label}</span>
+                <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+                  →
+                </span>
+              </a>
+            ) : (
+              <span className="inline-flex items-center gap-2 font-mono text-[12px] tracking-[0.06em] text-muted">
+                <span>{work.noLinkLabel}</span>
+                <span aria-hidden>→</span>
               </span>
-            </a>
-          ) : (
-            <span className="inline-flex items-center gap-2 font-mono text-[12px] tracking-[0.06em] text-muted">
-              <span>{work.noLinkLabel || 'Case study on request'}</span>
-              <span aria-hidden>→</span>
-            </span>
-          )}
-        </div>
+            )}
+          </div>
+        ) : null}
       </div>
     </article>
   );
@@ -151,13 +251,15 @@ function StatusBadge({ status }: { status: Status }) {
     return <span className="text-muted">{status}</span>;
   }
   const dotClass =
-    status === 'LIVE'
+    status === 'LIVE' || status === 'IN PRODUCTION'
       ? 'pulse-dot'
       : status === 'LOCAL'
       ? 'pulse-dot opacity-70 scale-90'
       : 'inline-block w-[7px] h-[7px] rounded-full bg-muted/40';
   const textClass =
-    status === 'LIVE' || status === 'LOCAL' ? 'text-flash' : 'text-muted';
+    status === 'LIVE' || status === 'IN PRODUCTION' || status === 'LOCAL'
+      ? 'text-flash'
+      : 'text-muted';
   return (
     <span className="inline-flex items-center gap-2">
       <span aria-hidden className={dotClass} />

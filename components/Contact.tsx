@@ -1,14 +1,40 @@
 'use client';
 
-import { useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { SectionHeader } from './SectionHeader';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
+const CONTACT_SUBJECT_KEY = 'contact-subject';
+
 export function Contact() {
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [subject, setSubject] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
+
+  // Sources for a pre-filled subject:
+  //  (a) sessionStorage on initial mount (covers F5 mid-flow + cross-tab)
+  //  (b) custom 'contact-prefill' event from WorkModal during a single session
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(CONTACT_SUBJECT_KEY);
+      if (stored) {
+        setSubject(stored);
+        sessionStorage.removeItem(CONTACT_SUBJECT_KEY);
+      }
+    } catch {
+      /* sessionStorage may be disabled — silently skip */
+    }
+
+    const onPrefill = (e: Event) => {
+      const detail = (e as CustomEvent<{ subject?: string }>).detail;
+      if (detail?.subject) setSubject(detail.subject);
+    };
+    window.addEventListener('contact-prefill', onPrefill as EventListener);
+    return () =>
+      window.removeEventListener('contact-prefill', onPrefill as EventListener);
+  }, []);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -64,7 +90,7 @@ export function Contact() {
               <>
                 Let&apos;s build
                 <br />
-                something.
+                something together.
               </>
             }
           />
@@ -88,6 +114,34 @@ export function Contact() {
                 aria-describedby="form-help"
                 noValidate
               >
+                {/* Hidden subject — Formspree maps _subject to the email's
+                    Subject line. Updates as `subject` state changes. */}
+                {subject ? (
+                  <input type="hidden" name="_subject" value={subject} />
+                ) : null}
+
+                {subject ? (
+                  <div className="flex items-center gap-3 mb-4 px-3 py-2 border border-flash/40 bg-flash/[0.06] rounded-[4px]">
+                    <span
+                      aria-hidden
+                      className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-flash"
+                    >
+                      Re:
+                    </span>
+                    <span className="font-mono text-[12px] text-bone flex-1 truncate">
+                      {subject}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setSubject(null)}
+                      aria-label="Clear subject"
+                      className="press font-mono text-[14px] leading-none text-muted hover:text-bone transition-colors"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : null}
+
                 <p
                   id="form-help"
                   className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-muted-soft mb-4"
@@ -175,8 +229,7 @@ export function Contact() {
               </p>
               <ul className="space-y-2.5">
                 <SocialLink href="https://www.linkedin.com/in/miguelcborges/" label="LinkedIn" />
-                <SocialLink href="https://github.com/miguelcborges" label="GitHub" />
-                <SocialLink href="https://x.com/miguelcborges" label="X" />
+                <SocialLink href="https://github.com/mborges-dev" label="GitHub" />
               </ul>
             </div>
           </div>

@@ -8,15 +8,23 @@ type Row = {
 const rows: Row[] = [
   {
     label: 'AI & LLM Integration',
-    description: 'Production-ready pipelines with Claude, GPT, RAG.',
+    description:
+      'Production AI systems that ship. Claude, GPT, RAG, vision pipelines — built to handle real users.',
+  },
+  {
+    label: 'Multi-agent Systems',
+    description:
+      'Orchestration, coordination, agent infrastructure. Specialized agents working together against shared goals — with token economy and human oversight.',
   },
   {
     label: 'Automation & Workflows',
-    description: 'n8n, custom backends, data pipelines.',
+    description:
+      'Operations that run themselves. n8n orchestration, custom backends, data flows across third-party APIs.',
   },
   {
     label: 'Full-stack Product Work',
-    description: 'Next.js, Supabase, Cloudflare, end-to-end builds.',
+    description:
+      'From idea to production. Next.js, Supabase, Cloudflare — full ownership, fast iteration cycles.',
   },
 ];
 

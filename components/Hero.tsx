@@ -79,11 +79,21 @@ export function Hero() {
         </p>
       </div>
 
-      {/* BOTTOM META — absolute, sits at section bottom (over the t-shirt area) */}
+      {/* BOTTOM META — absolute, sits at section bottom (over the t-shirt area).
+          Mobile-only description renders here too, above email/socials, per
+          the brief's top-to-bottom mobile reading order. */}
       <div
         className="hero-enter absolute inset-x-0 bottom-5 md:bottom-7 px-6 md:px-[8%] z-30 flex flex-col md:flex-row md:items-end md:justify-between gap-3"
         style={d(1200)}
       >
+        {/* Mobile-only description — desktop has its own absolute block at
+            right-[8%], mid-height (see DESCRIPTION above). */}
+        <p className="md:hidden text-[16px] leading-[1.6] text-muted max-w-[460px] mb-3">
+          I build AI products that ship — production systems with LLMs in
+          the loop. Agents, RAG, document pipelines, automations driving
+          real backends.
+        </p>
+
         <div className="font-mono text-[11px] tracking-[0.14em] uppercase text-bone/90 flex items-center gap-3">
           <span className="text-muted-faint" aria-hidden>E</span>
           <a
@@ -104,7 +114,7 @@ export function Hero() {
             / LinkedIn
           </a>
           <a
-            href="https://github.com/miguelcborges"
+            href="https://github.com/mborges-dev"
             target="_blank"
             rel="noreferrer"
             className="press inline-flex items-center py-2 -my-2 hover:text-flash transition-colors"

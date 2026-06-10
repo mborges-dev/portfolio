@@ -2,7 +2,7 @@ node_modules
 .next
 out
 .DS_Store
-.env*.local
+.env*
 *.tsbuildinfo
 next-env.d.ts
 
@@ -10,3 +10,6 @@ next-env.d.ts
 .claude/
 .agents/
 skills-lock.json
+
+# Local-only backup folder (source recordings, deprecated assets)
+_backup/

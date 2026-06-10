@@ -9,15 +9,18 @@ type Props = {
   url: string;
   /** Caption shown below the entire frame */
   caption?: string;
-  /** Used for alt text */
+  /** Used as a default alt text fallback */
   title: string;
+  /** Optional per-image alt text. Must match `images` array order. Falls back
+   *  to a generic "${title} — screen N of M" for any index without an entry. */
+  alts?: string[];
 };
 
 const AUTO_ADVANCE_MS = 3500;
 const RESUME_AFTER_CLICK_MS = 5000;
 const RESUME_AFTER_HOVER_MS = 2000;
 
-export function FleetHQCarousel({ images = [], url, caption, title }: Props) {
+export function FleetHQCarousel({ images = [], url, caption, title, alts }: Props) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reduced, setReduced] = useState(false);
@@ -140,7 +143,7 @@ export function FleetHQCarousel({ images = [], url, caption, title }: Props) {
               <img
                 key={src}
                 src={src}
-                alt={`${title} — screen ${i + 1} of ${images.length}`}
+                alt={alts?.[i] ?? `${title} — screen ${i + 1} of ${images.length}`}
                 aria-hidden={i !== active}
                 loading={i === 0 ? 'eager' : 'lazy'}
                 decoding="async"

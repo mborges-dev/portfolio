@@ -45,6 +45,16 @@ export type Work = {
   /** For art: 'browser' — optional WebM source (preferred by modern browsers
    *  for smaller payload; MP4 acts as fallback). */
   videoWebmSrc?: string;
+  /** Descriptive alt text / aria-label for the primary media element.
+   *  - 'browser' art → applied to the video/image
+   *  - 'duo' art → applied to the Mac (desktop) screenshot
+   *  - 'mac' art → applied to the screenshot
+   */
+  mediaAlt?: string;
+  /** For art: 'duo' — alt text for the iPhone screenshot. */
+  mobileMediaAlt?: string;
+  /** Per-image alt text for carousel art (matches `images` array order). */
+  imageAlts?: string[];
   browserUrl?: string;
   /** For art: 'duo' — second screenshot path for the iPhone frame */
   mobileImage?: string;
@@ -118,6 +128,7 @@ export function WorkCard({
             webmSrc={work.videoWebmSrc}
             url={work.browserUrl || work.link?.label || `${work.title.toLowerCase()}.com`}
             title={work.title}
+            alt={work.mediaAlt}
           />
         ) : artVariant === 'duo' ? (
           <DeviceDuoComposition
@@ -125,12 +136,15 @@ export function WorkCard({
             mobileSrc={work.mobileImage}
             macUrl={work.browserUrl || `${work.title.toLowerCase()}.app`}
             title={work.title}
+            desktopAlt={work.mediaAlt}
+            mobileAlt={work.mobileMediaAlt}
           />
         ) : artVariant === 'mac' ? (
           <MacFramedScreenshot
             src={work.image}
             url={work.browserUrl || `${work.title.toLowerCase()}.app`}
             title={work.title}
+            alt={work.mediaAlt}
           />
         ) : artVariant === 'carousel' ? (
           <FleetHQCarousel
@@ -138,6 +152,7 @@ export function WorkCard({
             url={work.browserUrl || `${work.title.toLowerCase()}.local`}
             caption={work.asciiCaption}
             title={work.title}
+            alts={work.imageAlts}
           />
         ) : (
           <div

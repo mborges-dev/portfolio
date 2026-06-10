@@ -21,6 +21,9 @@ type Props = {
   webmSrc?: string;
   url: string;
   title: string;
+  /** Descriptive alt text / aria-label — describes the content for SEO + a11y.
+   *  Falls back to a generic "${title} — interface preview" when omitted. */
+  alt?: string;
   /** CSS aspect-ratio for the media element. */
   fallbackAspect?: string;
 };
@@ -31,8 +34,10 @@ export function BrowserFramedVideo({
   webmSrc,
   url,
   title,
+  alt,
   fallbackAspect = '1200 / 680',
 }: Props) {
+  const mediaAlt = alt ?? `${title} — interface preview`;
   return (
     <div className="relative w-[88%] mx-auto transition-transform duration-300 ease-out hover:scale-[1.02]">
       <div
@@ -57,7 +62,7 @@ export function BrowserFramedVideo({
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={imageSrc}
-            alt={`${title} — interface preview`}
+            alt={mediaAlt}
             loading="lazy"
             decoding="async"
             className="block w-full"
@@ -69,8 +74,8 @@ export function BrowserFramedVideo({
             muted
             loop
             playsInline
-            preload="auto"
-            aria-label={`${title} — interface walkthrough (click to open case study)`}
+            preload="metadata"
+            aria-label={mediaAlt}
             className="block w-full"
             style={{ aspectRatio: fallbackAspect, background: '#000' }}
           >

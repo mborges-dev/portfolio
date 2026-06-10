@@ -19,6 +19,7 @@ const works: WorkType[] = [
     art: 'browser',
     videoSrc: '/videos/thefacio_scroll_final.mp4',
     videoWebmSrc: '/videos/thefacio_scroll_final.webm',
+    mediaAlt: 'TheFacio — AI customer service for restaurants on WhatsApp',
     browserUrl: 'thefacio.com',
   },
   {
@@ -34,6 +35,8 @@ const works: WorkType[] = [
     browserUrl: 'docflow.internal',
     image: '/screenshots/docflow-web.png',
     mobileImage: '/screenshots/docflow-mobile.png',
+    mediaAlt: 'DocFlow — AI-powered document operations dashboard',
+    mobileMediaAlt: 'DocFlow — mobile capture for field workers',
   },
   {
     year: '2026',
@@ -53,6 +56,12 @@ const works: WorkType[] = [
       '/screenshots/fleet-hq-3.png',
       '/screenshots/fleet-hq-vertical.png',
     ],
+    imageAlts: [
+      'Fleet HQ — multi-agent orchestration command bridge',
+      'Fleet HQ — 38 agents across 8 verticals',
+      'Fleet HQ — agent operations detail',
+      'Fleet HQ — vertical detail with agents and ventures',
+    ],
     asciiCaption: '38 agents · multi-world orchestration',
   },
   {
@@ -67,6 +76,7 @@ const works: WorkType[] = [
     image: '/screenshots/almi.png',
     art: 'mac',
     browserUrl: 'almi.app',
+    mediaAlt: 'Almi — HR Operating System dashboard',
   },
 ];
 

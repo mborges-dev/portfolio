@@ -5,11 +5,24 @@ type Props = {
   mobileSrc?: string;
   /** Text shown in the top bar of the Mac frame (e.g. "docflow.internal") */
   macUrl: string;
-  /** Used for alt text */
+  /** Used as default alt text when desktopAlt/mobileAlt not provided */
   title: string;
+  /** Descriptive alt for the desktop Mac screenshot */
+  desktopAlt?: string;
+  /** Descriptive alt for the mobile/iPhone screenshot */
+  mobileAlt?: string;
 };
 
-export function DeviceDuoComposition({ macSrc, mobileSrc, macUrl, title }: Props) {
+export function DeviceDuoComposition({
+  macSrc,
+  mobileSrc,
+  macUrl,
+  title,
+  desktopAlt,
+  mobileAlt,
+}: Props) {
+  const macAlt = desktopAlt ?? `${title} desktop dashboard`;
+  const phoneAlt = mobileAlt ?? `${title} mobile interface`;
   return (
     <div className="group relative w-full">
       {/* DESKTOP LAYOUT — Mac primary + iPhone overlapping bottom-right */}
@@ -18,7 +31,7 @@ export function DeviceDuoComposition({ macSrc, mobileSrc, macUrl, title }: Props
           className="relative w-[88%] mx-auto transition-transform duration-300 ease-out group-hover:scale-[1.02]"
           style={{ filter: 'drop-shadow(0 30px 60px rgba(0, 0, 0, 0.4))' }}
         >
-          <MacFrame src={macSrc} url={macUrl} alt={`${title} desktop dashboard`} />
+          <MacFrame src={macSrc} url={macUrl} alt={macAlt} />
         </div>
 
         <div
@@ -33,7 +46,7 @@ export function DeviceDuoComposition({ macSrc, mobileSrc, macUrl, title }: Props
               'drop-shadow(-16px 18px 32px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 28px rgba(74, 222, 128, 0.22))',
           }}
         >
-          <PhoneFrame src={mobileSrc} alt={`${title} mobile interface`} />
+          <PhoneFrame src={mobileSrc} alt={phoneAlt} />
         </div>
       </div>
 
@@ -45,7 +58,7 @@ export function DeviceDuoComposition({ macSrc, mobileSrc, macUrl, title }: Props
           className="w-full max-w-[420px]"
           style={{ filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4))' }}
         >
-          <MacFrame src={macSrc} url={macUrl} alt={`${title} desktop dashboard`} />
+          <MacFrame src={macSrc} url={macUrl} alt={macAlt} />
         </div>
       </div>
     </div>

@@ -3,8 +3,10 @@ type Props = {
   src?: string;
   /** Text shown in the top bar (e.g. "almi.app") */
   url: string;
-  /** Used for alt text */
+  /** Used as default alt text */
   title: string;
+  /** Descriptive alt for the screenshot */
+  alt?: string;
 };
 
 /**
@@ -12,7 +14,8 @@ type Props = {
  * Mac frame and TheFacio browser frame so the three live cards read as a set.
  * Renders at natural image aspect — no cropping.
  */
-export function MacFramedScreenshot({ src, url, title }: Props) {
+export function MacFramedScreenshot({ src, url, title, alt }: Props) {
+  const imgAlt = alt ?? `${title} dashboard`;
   return (
     <div
       className="relative w-[88%] mx-auto transition-transform duration-300 ease-out hover:scale-[1.02]"
@@ -40,7 +43,7 @@ export function MacFramedScreenshot({ src, url, title }: Props) {
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={src}
-              alt={`${title} dashboard`}
+              alt={imgAlt}
               loading="lazy"
               decoding="async"
               className="block w-full h-auto"
